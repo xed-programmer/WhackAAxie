@@ -7,10 +7,14 @@ var INITIAL = 1;
 var GAME_PLAYING = 2;
 var GAME_OVER = 3;
 
+var KEY_CODE = {
+    R: 82,
+};
+
 function Axie(canvas){
     // Base
     var game = this;
-
+ 
     // Global Attributes
     game.canvas = canvas;
     game.context = game.canvas.getContext('2d');
@@ -20,7 +24,48 @@ function Axie(canvas){
     // Game State
     game.currentState = INITIAL;
 
+    // Bind Events
+    game.bindEvents();
+    
+    // Create Game Object
+    game.createObjects();
 }
+
+Axie.prototype.createObjects = function() {
+    // Base 
+    var game = this;
+
+     // Background
+     game.background = new GameBackground('images/gamebg.jpg', game.canvas);
+};
+
+Axie.prototype.bindEvents = function() {
+    // Base
+    var game = this;
+
+    // Mouse Listener
+    game.canvas.addEventListener('click', function(event){        
+        switch (game.currentState) {
+            case INITIAL:
+                game.currentState = GAME_PLAYING;
+                break;
+            case GAME_PLAYING:
+                
+                break;
+        }
+    });
+
+    // Key Listener
+    window.addEventListener('keydown', function(event){
+        switch (game.currentState) {
+            case GAME_OVER:
+                if(event.keyCode === KEY_CODE.R) {
+                    game.currentState = GAME_PLAYING;
+                }
+                break;
+        }
+    });
+};
 
 Axie.prototype.start = function(){
     // base
@@ -51,6 +96,7 @@ Axie.prototype.runGameLoop = function() {
             game.drawGameOverScreen();
             break;
     }
+    game.start();
 };
 
 Axie.prototype.drawInitialScreen = function() {
@@ -66,23 +112,18 @@ Axie.prototype.drawInitialScreen = function() {
     // Text
     game.context.fillStyle = 'white';
     game.context.font = '36px Ariel';
-    game.context.fillText('INITIAL', game.cWidth / 2 - 100, game.cHeight / 2);
+    game.context.fillText('Click to Start!', game.cWidth / 2 - 100, game.cHeight / 2);
 };
 
 Axie.prototype.drawGamePlayingScreen = function() {
     // base
     var game = this;  
 
-    // Draw 
+    // Clear Canvas
+    game.context.clearRect(0,0, game.cWidth, game.cHeight);    
 
-    // Background
-    game.context.fillStyle = 'black';
-    game.context.fillRect(0,0, game.cWidth, game.cHeight);
-
-    // Text
-    game.context.fillStyle = 'white';
-    game.context.font = '36px Ariel';
-    game.context.fillText('GAME PLAYING', game.cWidth / 2 - 100, game.cHeight / 2);
+    // Draw Background
+    game.background.draw();    
 };
 
 Axie.prototype.drawGameOverScreen = function() {
@@ -99,4 +140,7 @@ Axie.prototype.drawGameOverScreen = function() {
     game.context.fillStyle = 'white';
     game.context.font = '36px Ariel';
     game.context.fillText('GAME OVER', game.cWidth / 2 - 100, game.cHeight / 2);
+
+    game.context.font = '24px Ariel';
+    game.context.fillText('Press R to Restart', game.cWidth / 2 - 100, game.cHeight / 2 + 50);
 };
