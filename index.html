@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Whack A Axie</title>
+    <style>
+      #canvas {
+        border: 1px solid black;
+        /* center align */
+        display: block;
+        width: 900px;
+        height: 600px;
+        margin: 0 auto;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="canvas" width="900" height="600">
+      THIS IS FALLBACK MESSAGE FOR OLD BROWSERS YOUR BROWSER IS NOT SUPPORTING
+      CANVAS
+    </canvas>
+
+    <script src="ball.js"></script>
+    <script>
+      window.onload = function () {
+        // Definitions
+        var canvas = document.getElementById("canvas");
+        var context = canvas.getContext("2d");
+        var cWidth = canvas.width;
+        var cHeight = canvas.height;
+
+        animate();
+
+        function animate() {
+          reqAnimFrame = window.requestAnimationFrame;
+          reqAnimFrame(animate);
+
+          // Clear Canvas
+          context.clearRect(0, 0, canvas.width, canvas.height);
+
+          // Update
+
+          // Draw
+        }
+      };
+    </script>
+  </body>
+</html>
