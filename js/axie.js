@@ -37,6 +37,11 @@ Axie.prototype.createObjects = function() {
 
      // Background
      game.background = new GameBackground('images/gamebg.jpg', game.canvas);
+
+     // Score
+     game.gscore = new GameScore(game.canvas);
+     game.gscore.x = game.cWidth - 200;     
+     game.gscore.y = 80;     
 };
 
 Axie.prototype.bindEvents = function() {
@@ -123,7 +128,10 @@ Axie.prototype.drawGamePlayingScreen = function() {
     game.context.clearRect(0,0, game.cWidth, game.cHeight);    
 
     // Draw Background
-    game.background.draw();    
+    game.background.draw();  
+    
+    // Draw Score
+    game.gscore.draw();
 };
 
 Axie.prototype.drawGameOverScreen = function() {
