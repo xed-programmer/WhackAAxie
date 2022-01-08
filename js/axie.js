@@ -41,7 +41,10 @@ Axie.prototype.createObjects = function() {
      // Score
      game.gscore = new GameScore(game.canvas);
      game.gscore.x = game.cWidth - 200;     
-     game.gscore.y = 80;     
+     game.gscore.y = 80;
+
+     // Monster
+     game.monster = new Monster('images/monster.png', game.canvas);
 };
 
 Axie.prototype.bindEvents = function() {
@@ -49,7 +52,9 @@ Axie.prototype.bindEvents = function() {
     var game = this;
 
     // Mouse Listener
-    game.canvas.addEventListener('click', function(event){        
+    game.canvas.addEventListener('click', function(event){
+        // console.log("Client X: " + event.clientX + "Client Y: " + event.clientY );        
+        console.log(event);
         switch (game.currentState) {
             case INITIAL:
                 game.currentState = GAME_PLAYING;
@@ -58,6 +63,7 @@ Axie.prototype.bindEvents = function() {
                 
                 break;
         }
+        game.monster.changePosition();
     });
 
     // Key Listener
@@ -132,6 +138,9 @@ Axie.prototype.drawGamePlayingScreen = function() {
     
     // Draw Score
     game.gscore.draw();
+
+    // Draw Monster
+    game.monster.draw();
 };
 
 Axie.prototype.drawGameOverScreen = function() {
