@@ -42,7 +42,7 @@ function Axie(canvas){
     // Loop the change position of Axie if not being hit within time interval    
     var axiePositionInterval =  setInterval(()=>{
         game.monster.changePosition();
-    }, 3000)
+    }, 3000);    
 }
 
 Axie.prototype.createObjects = function() {
@@ -51,6 +51,9 @@ Axie.prototype.createObjects = function() {
 
      // Background
      game.background = new GameBackground('images/gamebg.jpg', game.canvas);
+
+     // Game Initial
+     game.ginitial = new GameInitial(game.canvas);
 
      // Score
      game.gscore = new GameScore(game.canvas);
@@ -111,14 +114,16 @@ Axie.prototype.checkAxieCollision = function(mx, my) {
     var colMouseX = Math.pow(((monster.x + (monster.w/2)) - mx), 2);
     var colMouseY = Math.pow(((monster.y + (monster.h/2)) - my), 2);    
     console.log((Math.sqrt(colMouseX+ colMouseY)));
-    if((Math.sqrt(colMouseX+ colMouseY)) < (monster.w/2)){           
+    if((Math.sqrt(colMouseX+ colMouseY)) < (monster.w/2)){
+        game.gsound.hit.play();
         game.gscore.score += (10 * game.combo);
-        game.monster.changePosition();
+        game.monster.changePosition();        
         if(game.combo < 4){
             game.combo++;
         }
     }else{
         // If missed, Deduct 10 to the score
+        game.gsound.missed.play();
         game.gscore.score -= 10;        
         game.combo = 1;
     }    
@@ -165,17 +170,18 @@ Axie.prototype.drawInitialScreen = function() {
     // base
     var game = this;  
 
-    // Draw 
+    game.gsound.playAudio(game.gsound.ingame1);
+
+    // Clear Canvas
+    game.context.clearRect(0,0, game.cWidth, game.cHeight);    
 
     // Background
-    game.context.fillStyle = 'black';
-    game.context.fillRect(0,0, game.cWidth, game.cHeight);
+    game.ginitial.draw();
 
     // Text
     game.context.fillStyle = 'white';
     game.context.font = '36px Ariel';
-    game.context.fillText('Click to Start!', game.cWidth / 2 - 100, game.cHeight / 2);
-    game.gsound.playAudio(game.gsound.ingame1);
+    game.context.fillText('Click to Start!', game.cWidth / 2 - 100, game.cHeight / 2);    
 };
 
 Axie.prototype.drawGamePlayingScreen = function() {
