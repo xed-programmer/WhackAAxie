@@ -40,7 +40,7 @@ function Axie(canvas){
     game.createObjects();   
     
     // Loop the change position of Axie if not being hit within time interval    
-    var axiePositionInterval =  setInterval(()=>{
+    setInterval(()=>{
         game.monster.changePosition();
     }, 3000);    
 }
@@ -54,6 +54,9 @@ Axie.prototype.createObjects = function() {
 
      // Game Initial
      game.ginitial = new GameInitial(game.canvas);
+
+     // Game Over
+     game.gover = new GameOver(game.canvas);
 
      // Score
      game.gscore = new GameScore(game.canvas);
@@ -132,7 +135,7 @@ Axie.prototype.checkAxieCollision = function(mx, my) {
 Axie.prototype.start = function(){
     // base
     var game = this;
-
+    
     // Start Game
     window.requestAnimationFrame(function(){
         game.runGameLoop();
@@ -168,9 +171,7 @@ Axie.prototype.runGameLoop = function() {
 
 Axie.prototype.drawInitialScreen = function() {
     // base
-    var game = this;  
-
-    game.gsound.playAudio(game.gsound.ingame1);
+    var game = this;      
 
     // Clear Canvas
     game.context.clearRect(0,0, game.cWidth, game.cHeight);    
@@ -182,12 +183,19 @@ Axie.prototype.drawInitialScreen = function() {
     game.context.fillStyle = 'white';
     game.context.font = '36px Ariel';
     game.context.fillText('Click to Start!', game.cWidth / 2 - 100, game.cHeight / 2);    
+    
+    game.gsound.ingame1.play();
+    game.gsound.ingame2.pause();  
+    game.gsound.finish.pause();  
 };
 
 Axie.prototype.drawGamePlayingScreen = function() {
     // base
     var game = this; 
-    game.gsound.playAudio(game.gsound.ingame2);
+    
+    game.gsound.ingame2.play();  
+    game.gsound.ingame1.pause();    
+    game.gsound.finish.pause(); 
 
     // Clear Canvas
     game.context.clearRect(0,0, game.cWidth, game.cHeight);    
@@ -208,12 +216,16 @@ Axie.prototype.drawGamePlayingScreen = function() {
 Axie.prototype.drawGameOverScreen = function() {
     // base
     var game = this;     
-    
-    game.gsound.playAudio(game.gsound.finish);
+
+    game.gsound.finish.play(); 
+    game.gsound.ingame1.pause();
+    game.gsound.ingame2.pause();  
+
+    // Clear Canvas
+    game.context.clearRect(0,0, game.cWidth, game.cHeight); 
 
     // Background
-    game.context.fillStyle = 'black';
-    game.context.fillRect(0,0, game.cWidth, game.cHeight);
+    game.gover.draw();
 
     // Text
     game.context.fillStyle = 'white';
