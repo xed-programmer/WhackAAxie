@@ -142,6 +142,7 @@ Axie.prototype.bindEvents = function() {
         switch (game.currentState) {
             case GAME_OVER:                
                 if(event.keyCode === KEY_CODE.R) {
+                    game.gscore.score = 0;
                     game.currentState = GAME_PLAYING;
                     game.gtimer.start();
                 }
@@ -296,7 +297,6 @@ Axie.prototype.drawGameOverScreen = function() {
     game.context.fillText('Your Final Score is ' + game.gscore.score, game.cWidth / 2 - 200, game.cHeight / 2);
 
     game.context.font = '24px Ariel';
-    game.context.fillText('Press R to Restart', game.cWidth / 2 - 100, game.cHeight / 2 + 50);
-    game.gscore.score = 0;    
+    game.context.fillText('Press R to Restart', game.cWidth / 2 - 100, game.cHeight / 2 + 50);    
 };
 
