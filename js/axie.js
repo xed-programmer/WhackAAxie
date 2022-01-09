@@ -23,6 +23,9 @@ function Axie(canvas){
     game.boundings = game.canvas.getBoundingClientRect();
     game.combo = 1;
 
+    // Timer
+    game.timer = null;
+
     // Mouse Coordinates
     game.mouseDownX = 0;        
     game.mouseDownY = 0;        
@@ -37,7 +40,7 @@ function Axie(canvas){
     game.createObjects();   
     
     // Loop the change position of Axie if not being hit within time interval    
-    setInterval(()=>{
+    var axiePositionInterval =  setInterval(()=>{
         game.monster.changePosition();
     }, 3000)
 }
@@ -54,6 +57,11 @@ Axie.prototype.createObjects = function() {
      game.gscore.x = game.cWidth - 200;     
      game.gscore.y = 80;
 
+     // Timer
+     game.gtimer = new GameTimer(game.canvas);
+     game.gtimer.x = 50;     
+     game.gtimer.y = 80;
+
      // Monster
      game.monster = new Monster('images/monster.png', game.canvas);
 };
@@ -64,15 +72,12 @@ Axie.prototype.bindEvents = function() {
 
     // Mouse Listener
     game.canvas.addEventListener('click', function(e){
-        // alert("Client X: " + e.clientX + "Client Y: " + e.clientY );
-        // console.log(e);
         switch (game.currentState) {
             case INITIAL:
                 game.currentState = GAME_PLAYING;
+                game.gtimer.start();
                 break;
             case GAME_PLAYING:
-                // game.mouseDownX = e.clientX;
-                // game.mouseDownY = e.clientY;
                 game.mouseDownX = e.clientX - game.boundings.left;
                 game.mouseDownY = e.clientY - game.boundings.top;
 
@@ -85,9 +90,10 @@ Axie.prototype.bindEvents = function() {
     // Key Listener
     window.addEventListener('keydown', function(event){
         switch (game.currentState) {
-            case GAME_OVER:
+            case GAME_OVER:                
                 if(event.keyCode === KEY_CODE.R) {
                     game.currentState = GAME_PLAYING;
+                    game.gtimer.start();
                 }
                 break;
         }
@@ -109,7 +115,7 @@ Axie.prototype.checkAxieCollision = function(mx, my) {
             game.combo++;
         }
     }else{
-        // If missed, Deduct 1 to the score
+        // If missed, Deduct 10 to the score
         game.gscore.score -= 10;        
         game.combo = 1;
     }    
@@ -129,6 +135,11 @@ Axie.prototype.runGameLoop = function() {
     // base
     var game = this;
 
+    if(parseInt(game.gtimer.timer) <= 0){
+        game.currentState = GAME_OVER;
+        game.gtimer.stop();       
+    }
+
     // Game State
     switch(game.currentState) {
         case INITIAL:
@@ -137,7 +148,7 @@ Axie.prototype.runGameLoop = function() {
             break;
         case GAME_PLAYING:
             // Draw GAME PLAYING Screen            
-            game.drawGamePlayingScreen();                
+            game.drawGamePlayingScreen();            
             break;
         case GAME_OVER:
             // Draw GAME OVER Screen
@@ -176,6 +187,9 @@ Axie.prototype.drawGamePlayingScreen = function() {
     // Draw Score
     game.gscore.draw();
 
+    // Draw Timer
+    game.gtimer.draw();
+
     // Draw Monster
     game.monster.draw();
 };
@@ -193,7 +207,10 @@ Axie.prototype.drawGameOverScreen = function() {
     // Text
     game.context.fillStyle = 'white';
     game.context.font = '36px Ariel';
-    game.context.fillText('GAME OVER', game.cWidth / 2 - 100, game.cHeight / 2);
+    game.context.fillText('Time\'s Up!', game.cWidth / 2 - 100, game.cHeight / 2 - 50);
+ 
+    game.context.font = '36px Ariel';
+    game.context.fillText('Your Final Score is ' + game.gscore.score, game.cWidth / 2 - 200, game.cHeight / 2);
 
     game.context.font = '24px Ariel';
     game.context.fillText('Press R to Restart', game.cWidth / 2 - 100, game.cHeight / 2 + 50);

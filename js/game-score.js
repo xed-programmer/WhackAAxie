@@ -8,7 +8,7 @@ function GameScore(canvas) {
     gscore.context = gscore.canvas.getContext('2d');
 
     // Specification
-    gscore.start = new Date();
+    gscore.start = new Date().setSeconds(60).getSeconds;
     gscore.score = 0;
     gscore.x = 0;
     gscore.y = 0;
