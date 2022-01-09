@@ -64,6 +64,9 @@ Axie.prototype.createObjects = function() {
 
      // Monster
      game.monster = new Monster('images/monster.png', game.canvas);
+
+     // Sounds
+     game.gsound = new GameSound();     
 };
 
 Axie.prototype.bindEvents = function() {
@@ -152,7 +155,7 @@ Axie.prototype.runGameLoop = function() {
             break;
         case GAME_OVER:
             // Draw GAME OVER Screen
-            game.drawGameOverScreen();
+            game.drawGameOverScreen();            
             break;
     }
     game.start();
@@ -172,11 +175,13 @@ Axie.prototype.drawInitialScreen = function() {
     game.context.fillStyle = 'white';
     game.context.font = '36px Ariel';
     game.context.fillText('Click to Start!', game.cWidth / 2 - 100, game.cHeight / 2);
+    game.gsound.playAudio(game.gsound.ingame1);
 };
 
 Axie.prototype.drawGamePlayingScreen = function() {
     // base
-    var game = this;
+    var game = this; 
+    game.gsound.playAudio(game.gsound.ingame2);
 
     // Clear Canvas
     game.context.clearRect(0,0, game.cWidth, game.cHeight);    
@@ -196,9 +201,9 @@ Axie.prototype.drawGamePlayingScreen = function() {
 
 Axie.prototype.drawGameOverScreen = function() {
     // base
-    var game = this; 
+    var game = this;     
     
-    // Draw 
+    game.gsound.playAudio(game.gsound.finish);
 
     // Background
     game.context.fillStyle = 'black';
