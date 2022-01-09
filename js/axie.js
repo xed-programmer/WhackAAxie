@@ -20,6 +20,11 @@ function Axie(canvas){
     game.context = game.canvas.getContext('2d');
     game.cWidth = game.canvas.width;
     game.cHeight = game.canvas.height;
+    game.boundings = game.canvas.getBoundingClientRect();
+
+    // Mouse Coordinates
+    game.mouseDownX = 0;        
+    game.mouseDownY = 0;        
 
     // Game State
     game.currentState = INITIAL;
@@ -28,7 +33,7 @@ function Axie(canvas){
     game.bindEvents();
     
     // Create Game Object
-    game.createObjects();
+    game.createObjects();    
 }
 
 Axie.prototype.createObjects = function() {
@@ -52,18 +57,23 @@ Axie.prototype.bindEvents = function() {
     var game = this;
 
     // Mouse Listener
-    game.canvas.addEventListener('click', function(event){
-        // console.log("Client X: " + event.clientX + "Client Y: " + event.clientY );        
-        console.log(event);
+    game.canvas.addEventListener('click', function(e){
+        // alert("Client X: " + e.clientX + "Client Y: " + e.clientY );
+        // console.log(e);
         switch (game.currentState) {
             case INITIAL:
                 game.currentState = GAME_PLAYING;
                 break;
             case GAME_PLAYING:
-                
+                // game.mouseDownX = e.clientX;
+                // game.mouseDownY = e.clientY;
+                game.mouseDownX = e.clientX - game.boundings.left;
+                game.mouseDownY = e.clientY - game.boundings.top;
+
+                // Check if Axie is hit
+                game.checkAxieCollision(game.mouseDownX, game.mouseDownY);
                 break;
-        }
-        game.monster.changePosition();
+        }        
     });
 
     // Key Listener
@@ -76,6 +86,21 @@ Axie.prototype.bindEvents = function() {
                 break;
         }
     });
+};
+
+Axie.prototype.checkAxieCollision = function(mx, my) {
+    // Base
+    var game = this;
+    var monster = game.monster;
+
+    var colMouseX = Math.pow((monster.x - mx), 2);
+    var colMouseY = Math.pow((monster.y - my), 2);
+    console.log("mouse collision: " + (Math.sqrt((colMouseX) + colMouseY)) + " monster radius: " + (monster.w/2));             
+    if((Math.sqrt(colMouseX+ colMouseY)) < (monster.w)){   
+        
+        game.gscore.score += 1;
+        game.monster.changePosition();
+    }
 };
 
 Axie.prototype.start = function(){
@@ -141,6 +166,7 @@ Axie.prototype.drawGamePlayingScreen = function() {
 
     // Draw Monster
     game.monster.draw();
+
 };
 
 Axie.prototype.drawGameOverScreen = function() {
