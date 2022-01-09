@@ -21,6 +21,7 @@ function Axie(canvas){
     game.cWidth = game.canvas.width;
     game.cHeight = game.canvas.height;
     game.boundings = game.canvas.getBoundingClientRect();
+    game.combo = 1;
 
     // Mouse Coordinates
     game.mouseDownX = 0;        
@@ -33,7 +34,12 @@ function Axie(canvas){
     game.bindEvents();
     
     // Create Game Object
-    game.createObjects();    
+    game.createObjects();   
+    
+    // Loop the change position of Axie if not being hit within time interval    
+    setInterval(()=>{
+        game.monster.changePosition();
+    }, 3000)
 }
 
 Axie.prototype.createObjects = function() {
@@ -93,14 +99,20 @@ Axie.prototype.checkAxieCollision = function(mx, my) {
     var game = this;
     var monster = game.monster;
 
-    var colMouseX = Math.pow((monster.x - mx), 2);
-    var colMouseY = Math.pow((monster.y - my), 2);
-    console.log("mouse collision: " + (Math.sqrt((colMouseX) + colMouseY)) + " monster radius: " + (monster.w/2));             
-    if((Math.sqrt(colMouseX+ colMouseY)) < (monster.w)){   
-        
-        game.gscore.score += 1;
+    var colMouseX = Math.pow(((monster.x + (monster.w/2)) - mx), 2);
+    var colMouseY = Math.pow(((monster.y + (monster.h/2)) - my), 2);    
+    console.log((Math.sqrt(colMouseX+ colMouseY)));
+    if((Math.sqrt(colMouseX+ colMouseY)) < (monster.w/2)){           
+        game.gscore.score += (10 * game.combo);
         game.monster.changePosition();
-    }
+        if(game.combo < 4){
+            game.combo++;
+        }
+    }else{
+        // If missed, Deduct 1 to the score
+        game.gscore.score -= 10;        
+        game.combo = 1;
+    }    
 };
 
 Axie.prototype.start = function(){
@@ -124,8 +136,8 @@ Axie.prototype.runGameLoop = function() {
             game.drawInitialScreen();
             break;
         case GAME_PLAYING:
-            // Draw GAME PLAYING Screen
-            game.drawGamePlayingScreen();
+            // Draw GAME PLAYING Screen            
+            game.drawGamePlayingScreen();                
             break;
         case GAME_OVER:
             // Draw GAME OVER Screen
@@ -153,7 +165,7 @@ Axie.prototype.drawInitialScreen = function() {
 
 Axie.prototype.drawGamePlayingScreen = function() {
     // base
-    var game = this;  
+    var game = this;
 
     // Clear Canvas
     game.context.clearRect(0,0, game.cWidth, game.cHeight);    
@@ -166,7 +178,6 @@ Axie.prototype.drawGamePlayingScreen = function() {
 
     // Draw Monster
     game.monster.draw();
-
 };
 
 Axie.prototype.drawGameOverScreen = function() {

@@ -57,7 +57,6 @@ Monster.prototype.draw = function () {
         // monster.frame %= 4;
         if(monster.frame < 2){
             monster.frame++;
-        }
-        console.log("Position " + monster.position);
+        }        
     }
 };
