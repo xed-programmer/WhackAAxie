@@ -28,7 +28,9 @@ function Axie(canvas){
 
     // Mouse Coordinates
     game.mouseDownX = 0;        
-    game.mouseDownY = 0;        
+    game.mouseDownY = 0; 
+    game.mouseX = 0;
+    game.mouseY = 0;       
 
     // Game State
     game.currentState = INITIAL;
@@ -37,12 +39,37 @@ function Axie(canvas){
     game.bindEvents();
     
     // Create Game Object
-    game.createObjects();   
+    game.createObjects();
     
-    // Loop the change position of Axie if not being hit within time interval    
-    setInterval(()=>{
+    // Loop the change position of Axie if not being hit within time interval
+    game.counter = 3000;
+    // game.axieChangePositionInterval = function(){
+        
+    //     clearInterval(interval);
+
+    //     if(parseInt(game.gtimer.timer) > 40){
+    //         game.counter = 3000;
+    //     }else if(parseInt(game.gtimer.timer) > 20){
+    //         game.counter = 2000;
+    //     }else if(parseInt(game.gtimer.timer) > 0){
+    //         game.counter = 1000;
+    //     }
+    //     game.monster.changePosition();
+    //     interval = setInterval(game.axieChangePositionInterval, game.counter);
+    // };    
+    
+    // var interval = setInterval(game.axieChangePositionInterval, game.counter); 
+    game.axieChangePositionInterval = setInterval(()=>{
+        if(parseInt(game.gtimer.timer) > 40){
+            game.counter = 3000;
+        }else if(parseInt(game.gtimer.timer) > 20){
+            game.counter = 2000;
+        }else if(parseInt(game.gtimer.timer) > 0){
+            game.counter = 1000;
+        }
+        console.log(game.counter);
         game.monster.changePosition();
-    }, 3000);    
+    }, game.counter);
 }
 
 Axie.prototype.createObjects = function() {
@@ -72,7 +99,11 @@ Axie.prototype.createObjects = function() {
      game.monster = new Monster('images/monster.png', game.canvas);
 
      // Sounds
-     game.gsound = new GameSound();     
+     game.gsound = new GameSound();   
+     
+     // Hammer
+     game.hammerimg = new Image();
+     game.hammerimg.src = 'images/hammer.png';     
 };
 
 Axie.prototype.bindEvents = function() {
@@ -96,6 +127,16 @@ Axie.prototype.bindEvents = function() {
         }        
     });
 
+    game.canvas.addEventListener('mousemove', (e)=>{
+
+        switch (game.currentState) {
+            case GAME_PLAYING:
+                game.mouseX = e.clientX - game.boundings.left - 20;
+                game.mouseY = e.clientY - game.boundings.top - 20;    
+                break;
+        }             
+    });
+
     // Key Listener
     window.addEventListener('keydown', function(event){
         switch (game.currentState) {
@@ -116,11 +157,27 @@ Axie.prototype.checkAxieCollision = function(mx, my) {
 
     var colMouseX = Math.pow(((monster.x + (monster.w/2)) - mx), 2);
     var colMouseY = Math.pow(((monster.y + (monster.h/2)) - my), 2);    
-    console.log((Math.sqrt(colMouseX+ colMouseY)));
+
     if((Math.sqrt(colMouseX+ colMouseY)) < (monster.w/2)){
         game.gsound.hit.play();
         game.gscore.score += (10 * game.combo);
-        game.monster.changePosition();        
+        game.monster.changePosition();
+        
+        clearInterval(game.axieChangePositionInterval);
+
+        // Increase the Speed of changing position of axie
+        game.axieChangePositionInterval = setInterval(()=>{
+            if(parseInt(game.gtimer.timer) > 40){
+                game.counter = 3000;
+            }else if(parseInt(game.gtimer.timer) > 20){
+                game.counter = 2000;
+            }else if(parseInt(game.gtimer.timer) > 0){
+                game.counter = 1000;
+            }
+            console.log(game.counter);            
+            game.monster.changePosition();
+        }, game.counter);        
+        // interval = setInterval(game.axieChangePositionInterval, game.counter);
         if(game.combo < 4){
             game.combo++;
         }
@@ -148,7 +205,8 @@ Axie.prototype.runGameLoop = function() {
 
     if(parseInt(game.gtimer.timer) <= 0){
         game.currentState = GAME_OVER;
-        game.gtimer.stop();       
+        game.gtimer.stop();
+        clearInterval(game.axieChangePositionInterval);
     }
 
     // Game State
@@ -211,6 +269,8 @@ Axie.prototype.drawGamePlayingScreen = function() {
 
     // Draw Monster
     game.monster.draw();
+
+    game.context.drawImage(game.hammerimg, game.mouseX, game.mouseY, 80, 80);
 };
 
 Axie.prototype.drawGameOverScreen = function() {
@@ -237,4 +297,6 @@ Axie.prototype.drawGameOverScreen = function() {
 
     game.context.font = '24px Ariel';
     game.context.fillText('Press R to Restart', game.cWidth / 2 - 100, game.cHeight / 2 + 50);
+    game.gscore.score = 0;    
 };
+

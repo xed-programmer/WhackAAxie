@@ -9,7 +9,7 @@ function GameTimer(canvas) {
 
     // Specification
     gTime.countdown = new Date();
-    gTime.countdown.setSeconds(gTime.countdown.getSeconds() + 10);
+    gTime.countdown.setSeconds(gTime.countdown.getSeconds() + 60);
     gTime.now = new Date();
     gTime.distance = (gTime.countdown.getTime() - gTime.now.getTime());
     gTime.timer = Math.floor(gTime.distance / 1000);
@@ -46,7 +46,7 @@ GameTimer.prototype.start = function() {
     var gTime = this;
     gTime.isFinished = false;
     gTime.countdown = new Date();
-    gTime.countdown.setSeconds(gTime.countdown.getSeconds() + 10);
+    gTime.countdown.setSeconds(gTime.countdown.getSeconds() + 60);
     gTime.draw();
 }
 GameTimer.prototype.stop = function() {
